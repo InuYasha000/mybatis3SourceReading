@@ -46,6 +46,7 @@ public final class PropertyCopier {
                     // 设置属性可访问
                     field.setAccessible(true);
                     // 从 sourceBean 中，复制到 destinationBean 去
+                    // field 设置属性
                     field.set(destinationBean, field.get(sourceBean));
                 } catch (Exception e) {
                     // Nothing useful to do, will only fail on final fields, which will be ignored.

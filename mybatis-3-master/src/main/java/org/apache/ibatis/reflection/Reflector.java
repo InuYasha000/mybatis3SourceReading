@@ -59,7 +59,7 @@ public class Reflector {
     /**
      * 属性对应的 getting 方法的映射。
      *
-     * key 为属性名称
+     * key 为属性名称 比如getName这里就应该是Name
      * value 为 Invoker 对象
      */
     private final Map<String, Invoker> getMethods = new HashMap<>();
@@ -75,16 +75,21 @@ public class Reflector {
      *
      * key 为属性名称
      * value 为返回值的类型
+     * {@link Reflector#Reflector(java.lang.Class)}方法设置
      */
     private final Map<String, Class<?>> getTypes = new HashMap<>();
     /**
-     * 默认构造方法
+     * 默认构造方法,{@link Reflector#Reflector(java.lang.Class)}方法设置
      */
     private Constructor<?> defaultConstructor;
     /**
      * 不区分大小写的属性集合
      */
     private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
+
+    /**
+     * 上面这些属性都是在 {@link Reflector#Reflector(java.lang.Class)}方法设置
+     */
 
     public Reflector(Class<?> clazz) {
         // 设置对应的类
@@ -97,7 +102,7 @@ public class Reflector {
         addSetMethods(clazz);
         // 初始化 getMethods + getTypes 和 setMethods + setTypes ，通过遍历 fields 属性。
         addFields(clazz);
-        // 初始化 readablePropertyNames、writeablePropertyNames、caseInsensitivePropertyMap 属性
+        // 初始化 readablePropertyNames、writeablePropertyNames、caseInsensitivePropertyMap 属性，这里其实就是上面方法的补充
         readablePropertyNames = getMethods.keySet().toArray(new String[getMethods.keySet().size()]);
         writeablePropertyNames = setMethods.keySet().toArray(new String[setMethods.keySet().size()]);
         for (String propName : readablePropertyNames) {
@@ -154,6 +159,7 @@ public class Reflector {
                 // 获得属性
                 name = PropertyNamer.methodToProperty(name);
                 // 添加到 conflictingGetters 中
+                // conflictingGetters : key-name value-method
                 addMethodConflict(conflictingGetters, name, method);
             }
         }
@@ -338,6 +344,7 @@ public class Reflector {
         return result;
     }
 
+    //它是 #addGetMethods(...) 和 #addSetMethods(...) 方法的补充，因为有些 field ，不存在对应的 setting 或 getting 方法，所以直接使用对应的 field ，而不是方法
     private void addFields(Class<?> clazz) {
         // 获得所有 field 们
         Field[] fields = clazz.getDeclaredFields();
@@ -409,7 +416,7 @@ public class Reflector {
      * @return An array containing all methods in this class
      */
     private Method[] getClassMethods(Class<?> cls) {
-        // 每个方法签名与该方法的映射
+        // 每个方法 签名(returnType#方法名:参数名1,参数名2,参数名3) 与该方法的映射
         Map<String, Method> uniqueMethods = new HashMap<>();
         // 循环类，类的父类，类的父类的父类，直到父类为 Object
         Class<?> currentClass = cls;
@@ -437,7 +444,7 @@ public class Reflector {
     private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
         for (Method currentMethod : methods) {
             if (!currentMethod.isBridge()) { // 忽略 bridge 方法，参见 https://www.zhihu.com/question/54895701/answer/141623158 文章
-                // 获得方法签名
+                // 获得方法签名(returnType#方法名:参数名1,参数名2,参数名3)
                 String signature = getSignature(currentMethod);
                 // check to see if the method is already known
                 // if it is known, then an extended class must have

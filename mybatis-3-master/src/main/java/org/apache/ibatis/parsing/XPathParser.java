@@ -230,6 +230,8 @@ public class XPathParser {
         return (Double) evaluate(expression, root, XPathConstants.NUMBER);
     }
 
+    //eval 元素的方法，用于获得 Node 类型的节点的值
+    //注意这里处理类型包括Nodes和Node两种，最后都会转换成XNode类型，
     public List<XNode> evalNodes(String expression) { // Node 数组
         return evalNodes(document, expression);
     }

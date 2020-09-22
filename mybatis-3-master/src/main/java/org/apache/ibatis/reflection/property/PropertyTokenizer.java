@@ -19,6 +19,7 @@ import java.util.Iterator;
 
 /**
  * 属性分词器
+ * 举个例子，在访问 "order[0].item[0].name" 时，我们希望拆分成 "order[0]"、"item[0]"、"name" 三段，那么就可以通过 PropertyTokenizer 来实现。
  *
  * @author Clinton Begin
  */
@@ -80,11 +81,13 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
         return children;
     }
 
+    // 判断是否有下一个元素
     @Override
     public boolean hasNext() {
         return children != null;
     }
 
+    // 迭代获得下一个 PropertyTokenizer 对象
     @Override
     public PropertyTokenizer next() {
         return new PropertyTokenizer(children);

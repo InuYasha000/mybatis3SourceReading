@@ -52,6 +52,23 @@ public class PropertyParser {
         // Prevent Instantiation
     }
 
+    // 基于 variables 替换动态值，如果 result 为动态值
+
+    /**
+     * <dataSource type="POOLED">
+     *   <property name="driver" value="${driver}"/>
+     *   <property name="url" value="${url}"/>
+     *   <property name="username" value="${username}"/>
+     *   <property name="password" value="${password}"/>
+     * </dataSource>
+     *
+     * variables 的来源，即可以在常用的 Java Properties 文件中配置，也可以使用 MyBatis <property /> 标签中配置
+     * 这里配置的 username 和 password 属性，就可以替换上面的 ${username} 和 ${password} 这两个动态属性
+     * <properties resource="org/mybatis/example/config.properties">
+     *   <property name="username" value="dev_user"/>
+     *   <property name="password" value="F2Fa3!33TYyg"/>
+     * </properties>
+     */
     public static String parse(String string, Properties variables) {
         // 创建 VariableTokenHandler 对象
         VariableTokenHandler handler = new VariableTokenHandler(variables);
@@ -65,6 +82,13 @@ public class PropertyParser {
      * 变量 Token 处理器
      */
     private static class VariableTokenHandler implements TokenHandler {
+        /**
+         * <properties resource="org/mybatis/example/config.properties">
+         *   <property name="org.apache.ibatis.parsing.PropertyParser.enable-default-value" value="true"/>
+         *   <property name="org.apache.ibatis.parsing.PropertyParser.default-value-separator" value="?:"/> 分隔符被修改成了 ?:
+         * </properties>
+         */
+
 
         /**
          * 变量 Properties 对象

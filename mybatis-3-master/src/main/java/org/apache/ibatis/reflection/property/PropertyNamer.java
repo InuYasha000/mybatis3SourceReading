@@ -31,7 +31,7 @@ public final class PropertyNamer {
     }
 
     /**
-     * 根据方法名，获得对应的属性名
+     * 根据方法名，获得对应的属性名 比如getName，这里返回的就是Name
      *
      * @param name 方法名
      * @return 属性名

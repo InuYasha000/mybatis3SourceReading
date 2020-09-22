@@ -54,7 +54,7 @@ public class MetaClass {
      * @return MetaClass 对象
      */
     public MetaClass metaClassForProperty(String name) {
-        // 获得属性的类
+        // 获得属性的类的类型
         Class<?> propType = reflector.getGetterType(name);
         // 创建 MetaClass 对象
         return MetaClass.forClass(propType, reflectorFactory);

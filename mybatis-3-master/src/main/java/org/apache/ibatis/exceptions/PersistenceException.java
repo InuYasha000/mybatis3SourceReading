@@ -16,7 +16,7 @@
 package org.apache.ibatis.exceptions;
 
 /**
- * MyBatis 基础异常
+ * MyBatis 基础异常，取代{@link IbatisException}
  *
  * @author Clinton Begin
  */
