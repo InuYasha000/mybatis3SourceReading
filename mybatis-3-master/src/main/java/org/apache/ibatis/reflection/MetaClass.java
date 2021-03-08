@@ -38,11 +38,13 @@ public class MetaClass {
     private final ReflectorFactory reflectorFactory;
     private final Reflector reflector;
 
+    //一个 MetaClass 对象，对应一个 Class 对象
     private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
         this.reflectorFactory = reflectorFactory;
         this.reflector = reflectorFactory.findForClass(type);
     }
 
+    //创建指定类的 MetaClass 对象
     public static MetaClass forClass(Class<?> type, ReflectorFactory reflectorFactory) {
         return new MetaClass(type, reflectorFactory);
     }
@@ -264,7 +266,7 @@ public class MetaClass {
         // 无子表达式
         } else {
             // 获得属性名，并添加到 builder 中
-            String propertyName = reflector.findPropertyName(name);
+                String propertyName = reflector.findPropertyName(name);
             if (propertyName != null) {
                 builder.append(propertyName);
             }

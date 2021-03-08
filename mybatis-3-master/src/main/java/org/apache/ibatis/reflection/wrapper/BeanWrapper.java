@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * 普通对象的 ObjectWrapper 实现类
+ * 例如 User、Order 这样的 POJO 类
  *
  * @author Clinton Begin
  */

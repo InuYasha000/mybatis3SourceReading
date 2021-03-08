@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  * 对象包装器接口，基于 {@link org.apache.ibatis.reflection.MetaClass} 工具类，定义对指定对象的各种操作。
+ * 或者可以说，ObjectWrapper 是 MetaClass 的指定类的具象化
  *
  * @author Clinton Begin
  */

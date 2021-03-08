@@ -45,6 +45,10 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
      */
     private final String children;
 
+    //比如order[0].item[0].name
+    //此时name=order[0],children=item[0].name
+    //index=0,name=order,children不变，然后next()方法会继续分割children
+    //这样 "order[0].item[0].name" 拆分成 "order[0]"、"item[0]"、"name" 三段
     public PropertyTokenizer(String fullname) {
         // 初始化 name、children 字符串，使用 . 作为分隔
         int delim = fullname.indexOf('.');
@@ -88,6 +92,7 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     }
 
     // 迭代获得下一个 PropertyTokenizer 对象
+    // 又执行了构造方法
     @Override
     public PropertyTokenizer next() {
         return new PropertyTokenizer(children);

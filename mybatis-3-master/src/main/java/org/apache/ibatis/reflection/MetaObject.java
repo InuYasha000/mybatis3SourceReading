@@ -126,6 +126,7 @@ public class MetaObject {
         return objectWrapper.hasGetter(name);
     }
 
+    //大体逻辑上，就是不断对 name 分词，递归查找属性，直到 <1> 处，返回最终的结果
     public Object getValue(String name) {
         // 创建 PropertyTokenizer 对象，对 name 分词
         PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -141,7 +142,7 @@ public class MetaObject {
             }
         // 无子表达式
         } else {
-            // 获取值
+            // <1>获取值
             return objectWrapper.get(prop);
         }
     }
@@ -172,6 +173,7 @@ public class MetaObject {
         }
     }
 
+    //创建指定属性的 MetaObject 对象
     public MetaObject metaObjectForProperty(String name) {
         // 获得属性值
         Object value = getValue(name);
