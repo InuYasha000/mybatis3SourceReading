@@ -25,6 +25,9 @@ import java.util.Properties;
 
 /**
  * 非池化的 DataSourceFactory 实现类
+ * UNPOOLED– 这个数据源的实现只是每次被请求时打开和关闭连接。虽然有点慢，
+ * 但对于在数据库连接可用性方面没有太高要求的简单应用程序来说，是一个很好的选择。
+ * 不同的数据库在性能方面的表现也是不一样的，对于某些数据库来说，使用连接池并不重要
  *
  * @author Clinton Begin
  */

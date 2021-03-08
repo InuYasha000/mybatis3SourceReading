@@ -31,7 +31,7 @@ import java.sql.SQLException;
  * In other words, {@code null} value handling should be performed on subclass.
  * </p>
  *
- * TypeHandler 基础抽象类
+ * TypeHandler 基础抽象类 发生异常时，统一抛出 TypeException 异常
  *
  * @author Clinton Begin
  * @author Simone Tripodi

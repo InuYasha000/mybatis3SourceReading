@@ -31,7 +31,7 @@ public class ScheduledCache implements Cache {
      */
     private final Cache delegate;
     /**
-     * 清空间隔，单位：毫秒
+     * 清空间隔，单位：毫秒,默认1小时
      */
     protected long clearInterval;
     /**

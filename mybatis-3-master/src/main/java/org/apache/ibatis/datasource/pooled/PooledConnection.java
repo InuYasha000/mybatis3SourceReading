@@ -90,7 +90,7 @@ class PooledConnection implements InvocationHandler {
         this.createdTimestamp = System.currentTimeMillis();
         this.lastUsedTimestamp = System.currentTimeMillis();
         this.valid = true;
-        // 创建代理的 Connection 对象
+        // 创建代理的 Connection 对象 ，handler 对象就是 this，意味着后续对 proxyConnection 的所有方法调用，都会委托给 PooledConnection#invoke
         this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
     }
 

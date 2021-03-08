@@ -48,6 +48,7 @@ public class PooledDataSource implements DataSource {
 
     /**
      * UnpooledDataSource 对象
+     * 也就是获取真正连接的逻辑，还是在 UnpooledDataSource 中实现。
      */
     private final UnpooledDataSource dataSource;
 
@@ -73,7 +74,7 @@ public class PooledDataSource implements DataSource {
      */
     protected int poolMaximumLocalBadConnectionTolerance = 3;
     /**
-     * 发送到数据库的侦测查询，用来检验连接是否正常工作并准备接受请求。
+     * 发送到数据库的侦测查询，用来检验连接是否正常工作并准备接受请求。就是ping语句发送的sql
      */
     protected String poolPingQuery = "NO PING QUERY SET";
     /**
@@ -389,6 +390,7 @@ public class PooledDataSource implements DataSource {
         return ("" + url + username + password).hashCode();
     }
 
+    // 将使用完的连接，添加回连接池中 ，需要看空闲连接数是不是还有空闲数（超过最大空闲数了没有）
     protected void pushConnection(PooledConnection conn) throws SQLException {
         synchronized (state) {
             // 从激活的连接集合中移除该连接

@@ -416,7 +416,9 @@ public class Reflector {
      * @return An array containing all methods in this class
      */
     private Method[] getClassMethods(Class<?> cls) {
-        // 每个方法 签名(returnType#方法名:参数名1,参数名2,参数名3) 与该方法的映射
+        // 每个方法 key：签名(returnType#方法名:参数名1,参数名2,参数名3) ，value：该方法的映射
+        // void#checkPackageAccess:java.lang.ClassLoader,boolean
+        // 没看明白这里想要干什么，key值没有取
         Map<String, Method> uniqueMethods = new HashMap<>();
         // 循环类，类的父类，类的父类的父类，直到父类为 Object
         Class<?> currentClass = cls;

@@ -73,6 +73,7 @@ public class PropertyParser {
         // 创建 VariableTokenHandler 对象
         VariableTokenHandler handler = new VariableTokenHandler(variables);
         // 创建 GenericTokenParser 对象
+        // openToken = { ，closeToken = } ，这就是上面看到的 ${username} 和 {password}
         GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
         // 执行解析
         return parser.parse(string);

@@ -47,11 +47,15 @@ public class XPathParser {
      */
     private final Document document;
     /**
-     * 是否校验,一般为true
+     * 是否校验xml,一般为true
      */
     private boolean validation;
     /**
      * XML 实体解析器，MyBatis 自定义了 EntityResolver 的实现，达到使用本地 DTD 文件，从而避免下载网络 DTD 文件的效果
+     * 默认情况下，对 XML 进行校验时，会基于 XML 文档开始位置指定的 DTD 文件或 XSD 文件。例如说，解析 mybatis-config.xml 配置文件时，
+     * 会加载 http://mybatis.org/dtd/mybatis-3-config.dtd 这个 DTD 文件。但是，如果每个应用启动都从网络加载该 DTD 文件，
+     * 势必在弱网络下体验非常下，甚至说应用部署在无网络的环境下，还会导致下载不下来，那么就会出现 XML 校验失败的情况。
+     * 所以，在实际场景下，MyBatis 自定义了 EntityResolver 的实现，达到使用本地 DTD 文件，从而避免下载网络 DTD 文件的效果
      */
     private EntityResolver entityResolver;
     /**
@@ -175,9 +179,10 @@ public class XPathParser {
     }
 
     public String evalString(Object root, String expression) {
-        // 获得值
+        // 获得值,这里应该是{username}相关，variables 是zhangsan这种值
         String result = (String) evaluate(expression, root, XPathConstants.STRING);
         // 基于 variables 替换动态值，如果 result 为动态值
+        // 这就是 MyBatis 如何替换掉 XML 中的动态值实现的方式
         result = PropertyParser.parse(result, variables);
         return result;
     }

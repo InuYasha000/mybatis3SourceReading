@@ -77,6 +77,7 @@ import java.util.*;
 
 /**
  * MyBatis 配置
+ * XML 和注解中解析到的配置，最终都会设置到这个里面来
  *
  * @author Clinton Begin
  */
