@@ -29,6 +29,14 @@ import java.util.Properties;
  * 但对于在数据库连接可用性方面没有太高要求的简单应用程序来说，是一个很好的选择。
  * 不同的数据库在性能方面的表现也是不一样的，对于某些数据库来说，使用连接池并不重要
  *
+ * UNPOOLED 类型的数据源仅仅需要配置以下 5 种属性：
+ *
+ * driver – 这是 JDBC 驱动的 Java 类的完全限定名（并不是 JDBC 驱动中可能包含的数据源类）。
+ * url – 这是数据库的 JDBC URL 地址。
+ * username – 登录数据库的用户名。
+ * password – 登录数据库的密码。
+ * defaultTransactionIsolationLevel – 默认的连接事务隔离级别。
+ *
  * @author Clinton Begin
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {

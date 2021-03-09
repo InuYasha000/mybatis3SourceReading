@@ -78,7 +78,7 @@ public class UnpooledDataSource implements DataSource {
     private Integer defaultTransactionIsolationLevel;
 
     static {
-        // 初始化 registeredDrivers
+        // 初始化 registeredDrivers，看清楚是从 DriverManager.getDrivers() 拿的，在下面注册也是注册到这个里面去的
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             Driver driver = drivers.nextElement();
@@ -246,6 +246,7 @@ public class UnpooledDataSource implements DataSource {
             try {
                 // 获得 driver 类
                 if (driverClassLoader != null) {
+                    //一般就是Class.forName("com.mysql.jdbc.Driver")
                     driverType = Class.forName(driver, true, driverClassLoader);
                 } else {
                     driverType = Resources.classForName(driver);
@@ -255,6 +256,7 @@ public class UnpooledDataSource implements DataSource {
                 // http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
                 Driver driverInstance = (Driver) driverType.newInstance();
                 // 创建 DriverProxy 对象，并注册到 DriverManager 中
+                // 这里使用 DriverProxy 对象原因是使用Mybatis自定义的logger对象，
                 DriverManager.registerDriver(new DriverProxy(driverInstance));
                 // 添加到 registeredDrivers 中
                 registeredDrivers.put(driver, driverInstance);

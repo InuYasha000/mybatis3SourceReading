@@ -70,7 +70,8 @@ public class PooledDataSource implements DataSource {
      */
     protected int poolTimeToWait = 20000;
     /**
-     * 这是一个关于坏连接容忍度的底层设置，作用于每一个尝试从缓存池获取连接的线程. 如果这个线程获取到的是一个坏的连接，那么这个数据源允许这个线程尝试重新获取一个新的连接，但是这个重新尝试的次数不应该超过 poolMaximumIdleConnections 与 poolMaximumLocalBadConnectionTolerance 之和。
+     * 这是一个关于坏连接容忍度的底层设置，作用于每一个尝试从缓存池获取连接的线程. 如果这个线程获取到的是一个坏的连接，
+     * 那么这个数据源允许这个线程尝试重新获取一个新的连接，但是这个重新尝试的次数不应该超过 poolMaximumIdleConnections 与 poolMaximumLocalBadConnectionTolerance 之和。
      */
     protected int poolMaximumLocalBadConnectionTolerance = 3;
     /**
@@ -452,6 +453,7 @@ public class PooledDataSource implements DataSource {
 
         // 循环，获取可用的 Connection 连接
         while (conn == null) {
+            //基于 state 变量做同步，避免并发问题。从这个锁的粒度来说，颗粒度还是比较大的，所以 MyBatis 自带的数据池连接池性能应该一般
             synchronized (state) {
                 // 空闲连接非空
                 if (!state.idleConnections.isEmpty()) {
@@ -478,6 +480,8 @@ public class PooledDataSource implements DataSource {
                         PooledConnection oldestActiveConnection = state.activeConnections.get(0);
                         // 检查该连接是否超时
                         long longestCheckoutTime = oldestActiveConnection.getCheckoutTime();
+                        //连接的超时发现，并不是由一个定时任务后台执行，而是有点类似懒加载的方式，在连接不够的时候，
+                        //再去进行处理。实际上，很多“东西”的过期，都是基于这样的思路，例如 Redis 的键过期
                         if (longestCheckoutTime > poolMaximumCheckoutTime) { // 检查到超时
                             // Can claim overdue connection
                             // 对连接超时的时间的统计
