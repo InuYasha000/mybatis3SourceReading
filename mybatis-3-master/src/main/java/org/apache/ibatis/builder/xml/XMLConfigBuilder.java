@@ -132,30 +132,30 @@ public class XMLConfigBuilder extends BaseBuilder {
             //issue #117 read properties first
             // 解析 <properties /> 标签
             propertiesElement(root.evalNode("properties"));
-            // 解析 <settings /> 标签
+            // 解析 <settings /> 标签,检查变量是否有对应set方法
             Properties settings = settingsAsProperties(root.evalNode("settings"));
-            // 加载自定义的 VFS 实现类
+            // 加载自定义的 VFS 实现类，设置到 BaseBuilder.configuration 变量中
             loadCustomVfs(settings);
-            // 解析 <typeAliases /> 标签
+            // 解析 <typeAliases /> 标签，将配置类注册到 typeAliasRegistry 中
             typeAliasesElement(root.evalNode("typeAliases"));
-            // 解析 <plugins /> 标签
+            // 解析 <plugins /> 标签，添加到 Configuration#interceptorChain 中,拦截器链条
             pluginElement(root.evalNode("plugins"));
-            // 解析 <objectFactory /> 标签
+            // 解析 <objectFactory /> 标签,设置到 Configuration.objectFactory 中
             objectFactoryElement(root.evalNode("objectFactory"));
-            // 解析 <objectWrapperFactory /> 标签
+            // 解析 <objectWrapperFactory /> 标签，设置到 Configuration.objectWrapperFactory 中
             objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
-            // 解析 <reflectorFactory /> 标签
+            // 解析 <reflectorFactory /> 标签，设置到 Configuration.reflectorFactory 中
             reflectorFactoryElement(root.evalNode("reflectorFactory"));
-            // 赋值 <settings /> 到 Configuration 属性
+            // 赋值 <settings /> 到 Configuration 属性，上面那个setting只是检查了变量是否有set方法，这里才是真正赋值操作
             settingsElement(settings);
             // read it after objectFactory and objectWrapperFactory issue #631
             // 解析 <environments /> 标签
             environmentsElement(root.evalNode("environments"));
-            // 解析 <databaseIdProvider /> 标签
+            // 解析 <databaseIdProvider /> 标签，拿到数据库标识并且设置到 Configuration.databaseId 中
             databaseIdProviderElement(root.evalNode("databaseIdProvider"));
-            // 解析 <typeHandlers /> 标签
+            // 解析 <typeHandlers /> 标签,注册逻辑
             typeHandlerElement(root.evalNode("typeHandlers"));
-            // 解析 <mappers /> 标签
+            // 解析 <mappers /> 标签,注册到 Configuration.MapperRegistry.knownMappers 中
             mapperElement(root.evalNode("mappers"));
         } catch (Exception e) {
             throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -164,6 +164,23 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将 <setting /> 标签解析为 Properties 对象
+     * <settings>
+     *   <setting name="cacheEnabled" value="true"/>
+     *   <setting name="lazyLoadingEnabled" value="true"/>
+     *   <setting name="multipleResultSetsEnabled" value="true"/>
+     *   <setting name="useColumnLabel" value="true"/>
+     *   <setting name="useGeneratedKeys" value="false"/>
+     *   <setting name="autoMappingBehavior" value="PARTIAL"/>
+     *   <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>
+     *   <setting name="defaultExecutorType" value="SIMPLE"/>
+     *   <setting name="defaultStatementTimeout" value="25"/>
+     *   <setting name="defaultFetchSize" value="100"/>
+     *   <setting name="safeRowBoundsEnabled" value="false"/>
+     *   <setting name="mapUnderscoreToCamelCase" value="false"/>
+     *   <setting name="localCacheScope" value="SESSION"/>
+     *   <setting name="jdbcTypeForNull" value="OTHER"/>
+     *   <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
+     * </settings>
      *
      * @param context 节点
      * @return Properties 对象
@@ -212,6 +229,14 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 解析 <typeAliases /> 标签，将配置类注册到 {@link org.apache.ibatis.type.TypeAliasRegistry} 中。
+     * <typeAliases>
+     *   <typeAlias alias="Author" type="domain.blog.Author"/>
+     *   <typeAlias alias="Blog" type="domain.blog.Blog"/>
+     *   <typeAlias alias="Comment" type="domain.blog.Comment"/>
+     *   <typeAlias alias="Post" type="domain.blog.Post"/>
+     *   <typeAlias alias="Section" type="domain.blog.Section"/>
+     *   <typeAlias alias="Tag" type="domain.blog.Tag"/>
+     * </typeAliases>
      *
      * @param parent 节点
      */
@@ -245,6 +270,11 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 解析 <plugins /> 标签，添加到 {@link Configuration#interceptorChain} 中
+     * <plugins>
+     *   <plugin interceptor="org.mybatis.example.ExamplePlugin">
+     *     <property name="someProperty" value="100"/>
+     *   </plugin>
+     * </plugins>
      *
      * @param parent 节点
      * @throws Exception 发生异常时
@@ -264,6 +294,13 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * <objectFactory type="org.mybatis.example.ExampleObjectFactory">
+     *   <property name="someProperty" value="100"/>
+     * </objectFactory>
+     * @param context
+     * @throws Exception
+     */
     private void objectFactoryElement(XNode context) throws Exception {
         if (context != null) {
             // 获得 ObjectFactory 的实现类
@@ -304,6 +341,11 @@ public class XMLConfigBuilder extends BaseBuilder {
      * 1. 解析 <properties /> 标签，成 Properties 对象。
      * 2. 覆盖 configuration 中的 Properties 对象到上面的结果。
      * 3. 设置结果到 parser 和 configuration 中
+     *
+     * <properties resource="org/mybatis/example/config.properties">
+     *   <property name="username" value="dev_user"/>
+     *   <property name="password" value="F2Fa3!33TYyg"/>
+     * </properties>
      *
      * @param context 节点
      * @throws Exception 解析发生异常
@@ -369,6 +411,23 @@ public class XMLConfigBuilder extends BaseBuilder {
         configuration.setConfigurationFactory(resolveClass(props.getProperty("configurationFactory")));
     }
 
+    /**
+     * <environments default="development">
+     *   <environment id="development">
+     *     <transactionManager type="JDBC">
+     *       <property name="..." value="..."/>
+     *     </transactionManager>
+     *     <dataSource type="POOLED">
+     *       <property name="driver" value="${driver}"/>
+     *       <property name="url" value="${url}"/>
+     *       <property name="username" value="${username}"/>
+     *       <property name="password" value="${password}"/>
+     *     </dataSource>
+     *   </environment>
+     * </environments>
+     * @param context
+     * @throws Exception
+     */
     private void environmentsElement(XNode context) throws Exception {
         if (context != null) {
             // environment 属性非空，从 default 属性获得
@@ -396,6 +455,16 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * <databaseIdProvider type="DB_VENDOR">
+     *   <property name="SQL Server" value="sqlserver"/>
+     *   <property name="DB2" value="db2"/>
+     *   <property name="Oracle" value="oracle" />
+     * </databaseIdProvider>
+     * 这个方法就是去拿数据库商业名字，然后在这个properties中看有没有匹配上，比如SQL SERVER 那么返回sqlserver，否则返回null
+     * @param context
+     * @throws Exception
+     */
     private void databaseIdProviderElement(XNode context) throws Exception {
         DatabaseIdProvider databaseIdProvider = null;
         if (context != null) {
@@ -448,6 +517,13 @@ public class XMLConfigBuilder extends BaseBuilder {
         throw new BuilderException("Environment declaration requires a DataSourceFactory.");
     }
 
+    /**
+     * <typeHandlers>
+     *   <typeHandler handler="org.mybatis.example.ExampleTypeHandler"/>
+     * </typeHandlers>
+     * @param parent
+     * @throws Exception
+     */
     private void typeHandlerElement(XNode parent) throws Exception {
         if (parent != null) {
             // 遍历子节点
@@ -480,6 +556,32 @@ public class XMLConfigBuilder extends BaseBuilder {
         }
     }
 
+    /**
+     * <!-- 使用相对于类路径的资源引用 -->
+     * <mappers>
+     *   <mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
+     *   <mapper resource="org/mybatis/builder/BlogMapper.xml"/>
+     *   <mapper resource="org/mybatis/builder/PostMapper.xml"/>
+     * </mappers>
+     * <!-- 使用完全限定资源定位符（URL） -->
+     * <mappers>
+     *   <mapper url="file:///var/mappers/AuthorMapper.xml"/>
+     *   <mapper url="file:///var/mappers/BlogMapper.xml"/>
+     *   <mapper url="file:///var/mappers/PostMapper.xml"/>
+     * </mappers>
+     * <!-- 使用映射器接口实现类的完全限定类名 -->
+     * <mappers>
+     *   <mapper class="org.mybatis.builder.AuthorMapper"/>
+     *   <mapper class="org.mybatis.builder.BlogMapper"/>
+     *   <mapper class="org.mybatis.builder.PostMapper"/>
+     * </mappers>
+     * <!-- 将包内的映射器接口实现全部注册为映射器 -->
+     * <mappers>
+     *   <package name="org.mybatis.builder"/>
+     * </mappers>
+     * @param parent
+     * @throws Exception
+     */
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             // 遍历子节点

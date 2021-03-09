@@ -37,6 +37,7 @@ public abstract class BaseBuilder {
 
     /**
      * MyBatis Configuration 对象
+     * XML 和注解中解析到的配置，最终都会设置到这个里面来
      */
     protected final Configuration configuration;
     protected final TypeAliasRegistry typeAliasRegistry;
