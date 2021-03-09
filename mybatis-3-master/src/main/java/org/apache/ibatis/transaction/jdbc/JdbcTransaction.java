@@ -135,7 +135,7 @@ public class JdbcTransaction implements Transaction {
     }
 
     /**
-     * 重置 autoCommit 属性
+     * 重置 autoCommit 属性，设置为true
      */
     protected void resetAutoCommit() {
         try {

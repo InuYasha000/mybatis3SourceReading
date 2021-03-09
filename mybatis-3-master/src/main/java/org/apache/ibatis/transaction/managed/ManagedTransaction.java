@@ -25,7 +25,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 基于容器管理的事务实现类
+ * 基于容器管理的事务实现类，少了autocommit属性，事务管理交给了容器，实际没有使用
  *
  * {@link Transaction} that lets the container manage the full lifecycle of the transaction.
  * Delays connection retrieval until getConnection() is called.
