@@ -47,6 +47,7 @@ public abstract class VFS {
     /** Singleton instance holder. */
     private static class VFSHolder {
 
+        //懒汉式，线程安全
         static final VFS INSTANCE = createVFS();
 
         @SuppressWarnings("unchecked")
