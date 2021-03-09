@@ -37,6 +37,13 @@ public final class LogFactory {
 
     static {
         // 逐个尝试，判断使用哪个 Log 的实现类，即初始化 logConstructor 属性
+        // 按照
+        // Slf4j、
+        // CommonsLogging、
+        // Log4J2Logging、
+        // Log4JLogging、
+        // JdkLogging、
+        // NoLogging 的顺序
         tryImplementation(LogFactory::useSlf4jLogging);
         tryImplementation(LogFactory::useCommonsLogging);
         tryImplementation(LogFactory::useLog4J2Logging);
