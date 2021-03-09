@@ -40,6 +40,8 @@ public abstract class TypeReference<T> {
         rawType = getSuperclassTypeParameter(getClass());
     }
 
+    // IntegerTypeHandler 解析后的结果 rawType 为 Integer
+    // CustomStringTypeHandler 自身是没有泛型的，需要从父类 StringTypeHandler 中获取。并且，获取的结果会是 rawType 为 String
     Type getSuperclassTypeParameter(Class<?> clazz) {
         // 从父类中获取 <T>
         Type genericSuperclass = clazz.getGenericSuperclass();

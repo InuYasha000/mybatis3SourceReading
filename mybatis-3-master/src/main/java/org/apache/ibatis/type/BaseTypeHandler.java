@@ -53,6 +53,17 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
         this.configuration = c;
     }
 
+    /**
+     * 设置 PreparedStatement 的指定参数
+     *
+     * Java Type => JDBC Type
+     *
+     * @param ps PreparedStatement 对象
+     * @param i 参数占位符的位置
+     * @param parameter 参数
+     * @param jdbcType JDBC 类型
+     * @throws SQLException 当发生 SQL 异常时
+     */
     @Override
     public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
         // 参数为空时，设置为 null 类型

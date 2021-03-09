@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link TypeHandler} 注册表
+ * TypeHandler 注册表，相当于管理 TypeHandler 的容器，从其中能获取到对应的 TypeHandler 。
  *
  * @author Clinton Begin
  * @author Kazuki Shimizu
@@ -42,6 +43,7 @@ public final class TypeHandlerRegistry {
 
     /**
      * 空 TypeHandler 集合的标识，即使 {@link #TYPE_HANDLER_MAP} 中，某个 KEY1 对应的 Map<JdbcType, TypeHandler<?>> 为空。
+     * 当一个 Java Type 不存在对应的 JDBC Type 时，就使用 NULL_TYPE_HANDLER_MAP 静态属性，添加到 TYPE_HANDLER_MAP 中进行占位
      *
      * @see #getJdbcHandlerMap(Type)
      */
@@ -49,6 +51,8 @@ public final class TypeHandlerRegistry {
 
     /**
      * JDBC Type 和 {@link TypeHandler} 的映射
+     * 一个 JDBC Type 只对应一个 Java Type ，也就是一个 TypeHandler ，不同于 TYPE_HANDLER_MAP 属性。
+     * 我们可以看到，三个时间类型的 JdbcType 注册到 JDBC_TYPE_HANDLER_MAP 中
      *
      * {@link #register(JdbcType, TypeHandler)}
      */
@@ -59,6 +63,8 @@ public final class TypeHandlerRegistry {
      * KEY1：JDBC Type
      * KEY2：Java Type
      * VALUE：{@link TypeHandler} 对象
+     * 当一个 Java Type 不存在对应的 JDBC Type 时，就使用 NULL_TYPE_HANDLER_MAP 静态属性，添加到 TYPE_HANDLER_MAP 中进行占位
+     * 一个 Java Type 可以对应多个 JDBC Type ，也就是多个 TypeHandler
      */
     private final Map<Type, Map<JdbcType, TypeHandler<?>>> TYPE_HANDLER_MAP = new ConcurrentHashMap<>();
     /**
@@ -71,6 +77,7 @@ public final class TypeHandlerRegistry {
 
     /**
      * {@link UnknownTypeHandler} 对象
+     * UnknownTypeHandler 对象，用于 Object 类型的注册
      */
     private final TypeHandler<Object> UNKNOWN_TYPE_HANDLER = new UnknownTypeHandler(this);
     /**
@@ -108,6 +115,7 @@ public final class TypeHandlerRegistry {
         register(JdbcType.DOUBLE, new DoubleTypeHandler());
 
         register(Reader.class, new ClobReaderTypeHandler());
+        //一个 Java Type 可以对应多个 JDBC Type ，也就是多个 TypeHandler
         register(String.class, new StringTypeHandler());
         register(String.class, JdbcType.CHAR, new StringTypeHandler());
         register(String.class, JdbcType.CLOB, new ClobTypeHandler());
@@ -248,6 +256,7 @@ public final class TypeHandlerRegistry {
             // 最差，从 TypeHandler 集合中选择一个唯一的 TypeHandler
             if (handler == null) {
                 // #591
+                // 就是选择第一个，并且不能有其它的不同类的处理器,否则返回 null
                 handler = pickSoleHandler(jdbcHandlerMap);
             }
         }
@@ -262,14 +271,14 @@ public final class TypeHandlerRegistry {
         if (NULL_TYPE_HANDLER_MAP.equals(jdbcHandlerMap)) {
             return null;
         }
-        // 如果找不到
+        // 如果找不到，去判断是不是枚举，或者去找他的父类
         if (jdbcHandlerMap == null && type instanceof Class) {
             Class<?> clazz = (Class<?>) type;
             // 枚举类型
             if (clazz.isEnum()) {
                 // 获得父类对应的 TypeHandler 集合
                 jdbcHandlerMap = getJdbcHandlerMapForEnumInterfaces(clazz, clazz);
-                // 如果找不到
+                // 如果找不到，就使用默认的枚举类 EnumTypeHandler.class
                 if (jdbcHandlerMap == null) {
                     // 注册 defaultEnumTypeHandler ，并使用它
                     register(clazz, getInstance(clazz, defaultEnumTypeHandler));
@@ -435,6 +444,7 @@ public final class TypeHandlerRegistry {
             // 获得 Java Type 对应的 map
             Map<JdbcType, TypeHandler<?>> map = TYPE_HANDLER_MAP.get(javaType);
             if (map == null || map == NULL_TYPE_HANDLER_MAP) { // 如果不存在，则进行创建
+                //当一个 Java Type 不存在对应的 JDBC Type 时，就使用 NULL_TYPE_HANDLER_MAP 静态属性，添加到 TYPE_HANDLER_MAP 中进行占位
                 map = new HashMap<>();
                 TYPE_HANDLER_MAP.put(javaType, map);
             }
@@ -501,6 +511,7 @@ public final class TypeHandlerRegistry {
         if (javaTypeClass != null) {
             try {
                 Constructor<?> c = typeHandlerClass.getConstructor(Class.class);
+                // javaTypeClass 就是传进去的参数，EnumTypeHandler 的构造函数其实就是
                 return (TypeHandler<T>) c.newInstance(javaTypeClass); // 符合这个条件的，例如 EnumTypeHandler
             } catch (NoSuchMethodException ignored) {
                 // ignored 忽略该异常，继续向下
@@ -522,12 +533,21 @@ public final class TypeHandlerRegistry {
     /**
      * 扫描指定包下的所有 TypeHandler 类，并发起注册
      *
+     @MappedTypes({String[].class})
+     @MappedJdbcTypes({JdbcType.VARCHAR})
+     public class StringArrayTypeHandler implements TypeHandler<String[]> {
+
+     }
+      * 看向上面的类，这里其实把这两个注解里面对应的类注册到那几个map中
+      * 这就是这两个注册的作用，以及这个方法还有一大堆register方法的作用
      * @param packageName 指定包
      */
     public void register(String packageName) {
         // 扫描指定包下的所有 TypeHandler 类
         ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
+        // 根据packageName扫描类，如果是TypeHandler就加入到 ResolverUtil.matches
         resolverUtil.find(new ResolverUtil.IsA(TypeHandler.class), packageName);
+        // 这里就是拿到上面的 ResolverUtil.matches
         Set<Class<? extends Class<?>>> handlerSet = resolverUtil.getClasses();
         // 遍历 TypeHandler 数组，发起注册
         for (Class<?> type : handlerSet) {

@@ -49,6 +49,7 @@ public class IntegerTypeHandler extends BaseTypeHandler<Integer> {
         // 获得字段的值
         int result = rs.getInt(columnIndex);
         // 先通过 rs 判断是否空，如果是空，则返回 null ，否则返回 result
+        // rs.wasNull() 判断最后读取的字段是否为空
         return (result == 0 && rs.wasNull()) ? null : result;
     }
 

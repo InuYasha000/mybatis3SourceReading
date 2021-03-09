@@ -22,6 +22,8 @@ import java.sql.SQLException;
 
 /**
  * Enum 类型的 TypeHandler 实现类
+ * 数据库不存在枚举类型，所以讲枚举类型持久化到数据库有两种方式，Enum.name <=> String 和 Enum.ordinal（序号） <=> int
+ * EnumTypeHandler 是前者,EnumOrdinalTypeHandler 是后者
  *
  * @author Clinton Begin
  */
@@ -53,6 +55,7 @@ public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, E parameter, JdbcType jdbcType) throws SQLException {
         // 将 Enum 转换成 int 类型
+        // 就是序号
         ps.setInt(i, parameter.ordinal());
     }
 

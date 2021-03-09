@@ -22,6 +22,9 @@ import java.sql.SQLException;
 
 /**
  * 类型转换处理器
+ * 一共有两类方法，分别是：
+ * #setParameter(...) 方法，是 Java Type => JDBC Type 的过程。
+ * #getResult(...) 方法，是 JDBC Type => Java Type 的过程。
  *
  * @author Clinton Begin
  */

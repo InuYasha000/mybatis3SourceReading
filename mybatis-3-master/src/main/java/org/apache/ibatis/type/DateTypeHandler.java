@@ -20,6 +20,7 @@ import java.util.Date;
 
 /**
  * Date 类型的 TypeHandler 实现类
+ * java.util.Date 和 java.sql.Timestamp 的互相转换
  *
  * @author Clinton Begin
  */

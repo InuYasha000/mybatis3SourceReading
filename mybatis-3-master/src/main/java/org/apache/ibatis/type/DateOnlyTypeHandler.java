@@ -23,6 +23,8 @@ import java.util.Date;
 
 /**
  * Date 类型的 TypeHandler 实现类
+ * java.util.Date 和 java.sql.Date 的互相转换
+ * 数据库里的时间有多种类型，以 MySQL 举例子，有 date、timestamp、datetime 三种类型
  *
  * @author Clinton Begin
  */
