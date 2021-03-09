@@ -69,7 +69,7 @@ public class MapperRegistry {
     public <T> void addMapper(Class<T> type) {
         // 判断，必须是接口。
         if (type.isInterface()) {
-            // 已经添加过，则抛出 BindingException 异常
+            // 已经添加过，则抛出 BindingException 异常，不能重复添加
             if (hasMapper(type)) {
                 throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
             }
@@ -82,6 +82,7 @@ public class MapperRegistry {
                 // mapper parser. If the type is already known, it won't try.
                 // 解析 Mapper 的注解配置
                 MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+                // 创建 MapperAnnotationBuilder 对象，解析 Mapper 的注解配置
                 parser.parse();
                 // 标记加载完成
                 loadCompleted = true;
