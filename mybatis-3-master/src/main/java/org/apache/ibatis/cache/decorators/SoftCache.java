@@ -34,11 +34,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class SoftCache implements Cache {
 
     /**
-     * 强引用的键的队列
+     * 强引用的键的队列，放到这个里面就表示从软引用变成了强引用
      */
     private final Deque<Object> hardLinksToAvoidGarbageCollection;
     /**
-     * {@link #hardLinksToAvoidGarbageCollection} 的大小
+     * {@link #hardLinksToAvoidGarbageCollection} 的大小，默认256
      */
     private int numberOfHardLinks;
     /**
@@ -97,6 +97,7 @@ public class SoftCache implements Cache {
             } else {
                 // See #586 (and #335) modifications need more than a read lock
                 // 添加到 hardLinksToAvoidGarbageCollection 的队头
+                // 跟WeakCache不同点在于这里加了锁
                 synchronized (hardLinksToAvoidGarbageCollection) {
                     hardLinksToAvoidGarbageCollection.addFirst(result);
                     // 超过上限，移除 hardLinksToAvoidGarbageCollection 的队尾

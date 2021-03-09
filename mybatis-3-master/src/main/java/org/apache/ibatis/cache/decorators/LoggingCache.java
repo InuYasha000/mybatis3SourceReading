@@ -42,6 +42,7 @@ public class LoggingCache implements Cache {
     protected int requests = 0;
     /**
      * 统计命中缓存的次数
+     * 这个参数和上面参数的比值就是命中率
      */
     protected int hits = 0;
 

@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * 永不过期的 Cache 实现类，基于 HashMap 实现类
+ * 这个就是一级缓存
  *
  * @author Clinton Begin
  */

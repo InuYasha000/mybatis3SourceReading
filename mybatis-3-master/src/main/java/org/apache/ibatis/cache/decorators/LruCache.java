@@ -39,7 +39,8 @@ public class LruCache implements Cache {
      */
     private Map<Object, Object> keyMap;
     /**
-     * 最老的键，即要被淘汰的
+     * 最老的键，即要被淘汰的，这个值在LinkedHashMap容量满的时候会被赋值
+     * 也就是说在向 LRU 缓存 set 值的时候，
      */
     private Object eldestKey;
 
@@ -95,6 +96,7 @@ public class LruCache implements Cache {
         return delegate.getObject(key);
     }
 
+    //这里并没有从keyMap中删除，可以也是从LRU本身就有清理功能的角度出发设计的吧
     @Override
     public Object removeObject(Object key) {
         return delegate.removeObject(key);

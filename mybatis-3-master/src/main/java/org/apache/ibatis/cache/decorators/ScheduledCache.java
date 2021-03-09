@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * 定时清空整个容器的 Cache 实现类
+ * 默认1小时清空一次
  *
  * @author Clinton Begin
  */
@@ -56,7 +57,7 @@ public class ScheduledCache implements Cache {
 
     @Override
     public int getSize() {
-        // 判断是否要全部清空
+        // 判断是否要全部清空，也是懒加载的设计
         clearWhenStale();
         return delegate.getSize();
     }

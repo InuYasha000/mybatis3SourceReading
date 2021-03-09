@@ -35,7 +35,7 @@ public class FifoCache implements Cache {
      */
     private final Cache delegate;
     /**
-     * 双端队列，记录缓存键的添加
+     * 双端队列，记录缓存键的添加，最多1024
      */
     private final Deque<Object> keyList;
     /**
@@ -77,7 +77,8 @@ public class FifoCache implements Cache {
 
     @Override
     public Object removeObject(Object key) {
-        // 此处，理论应该也要移除 keyList 呀
+        // 此处，理论应该也要移除 keyList 呀，但是这里并没有移除，我觉得也没有什么问题，
+        // 原因很简单，list删除并不是一个高效动作，需要一个一个遍历，其次在添加时是做了容量满了就删除的操作
         return delegate.removeObject(key);
     }
 

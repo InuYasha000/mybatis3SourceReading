@@ -34,15 +34,18 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class WeakCache implements Cache {
 
     /**
-     * 强引用的键的队列
+     * 强引用的键的队列，放到这个里面就表示从弱引用变成了强引用
      */
     private final Deque<Object> hardLinksToAvoidGarbageCollection;
     /**
-     * {@link #hardLinksToAvoidGarbageCollection} 的大小
+     * {@link #hardLinksToAvoidGarbageCollection} 的大小，默认256
      */
     private int numberOfHardLinks;
     /**
      * 被 GC 回收的 WeakEntry 集合，避免被 GC。
+     * 这里我理解的就是弱引用在系统内存充足与否都会在gc后被会收到这个引用队列中，
+     * 因此put，getSize 方法都需要删除gc掉的参数
+     * 如果 WeakEntry 对象被 GC 时，就会添加到 queueOfGarbageCollectedEntries 队列中
      */
     private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
     /**

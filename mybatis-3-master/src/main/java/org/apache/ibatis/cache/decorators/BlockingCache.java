@@ -31,6 +31,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * 这里的阻塞比较特殊，当线程去获取缓存值时，如果不存在，则会阻塞后续的其他线程去获取该缓存。
  * 为什么这么有这样的设计呢？因为当线程 A 在获取不到缓存值时，一般会去设置对应的缓存值，这样就避免其他也需要该缓存的线程 B、C 等，重复添加缓存。
+ * 这个设计算是一种小优化吧
  *
  * Simple and inefficient version of EhCache's BlockingCache decorator.
  * It sets a lock over a cache key when the element is not found in cache.
@@ -92,6 +93,7 @@ public class BlockingCache implements Cache {
         return value;
     }
 
+    //这里注意，这个方法名字和内容不符合
     @Override
     public Object removeObject(Object key) {
         // despite of its name, this method is called only to release locks

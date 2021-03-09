@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * 同步的 Cache 实现类
+ * 所有方法都加了 synchronized 关键字
  *
  * @author Clinton Begin
  */

@@ -88,6 +88,7 @@ public class SerializedCache implements Cache {
         return delegate.equals(obj);
     }
 
+    //序列化
     private byte[] serialize(Serializable value) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
@@ -99,6 +100,7 @@ public class SerializedCache implements Cache {
         }
     }
 
+    //反序列化
     private Serializable deserialize(byte[] value) {
         Serializable result;
         try (ByteArrayInputStream bis = new ByteArrayInputStream(value);
