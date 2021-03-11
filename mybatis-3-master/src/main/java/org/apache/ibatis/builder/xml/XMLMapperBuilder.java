@@ -390,8 +390,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
     private void sqlElement(List<XNode> list) throws Exception {
         if (configuration.getDatabaseId() != null) {
+            // 第一次传入具体的 databaseId，用于解析带有 databaseId 属性，且属性值与此相等的<sql>节点
             sqlElement(list, configuration.getDatabaseId());
         }
+        // 第二次传入的 databaseId 为空，用于解析未配置 databaseId 属性的<sql>节点。
         sqlElement(list, null);
         // 上面两块代码，可以简写成 sqlElement(list, configuration.getDatabaseId());
     }
